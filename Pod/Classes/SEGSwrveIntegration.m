@@ -14,10 +14,16 @@
 
 - (void)identify:(SEGIdentifyPayload *)payload
 {
+
     if (payload.userId != nil && [payload.userId length] != 0) {
-        NSDictionary* userProperties = @{@"customer.id": payload.userId};
-        [SwrveSDK userUpdate:userProperties];
-        SEGLog(@"[SwrveSDK userUpdate:%@]", userProperties);
+        
+        [SwrveSDK identify:payload.userId onSuccess:^(NSString * _Nonnull status, NSString * _Nonnull swrveUserId) {
+            NSDictionary* userProperties = @{@"customer.id": payload.userId};
+            [SwrveSDK userUpdate:userProperties];
+            SEGLog(@"[SwrveSDK userUpdate:%@]", userProperties);
+        } onError:^(NSInteger httpCode, NSString * _Nonnull errorMessage) {
+            // Log the error.
+        }];
     }
 
     [SwrveSDK userUpdate:payload.traits];
